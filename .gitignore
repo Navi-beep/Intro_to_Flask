@@ -3,6 +3,7 @@ __pycache__
 kekembas_venv
 
 
+app.db
 
 
-
+.env
