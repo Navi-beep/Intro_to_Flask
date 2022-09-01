@@ -1,6 +1,6 @@
 from . import api
 from flask import jsonify, request
-from app.models import Post
+from app.models import User, Post
 
 
 @api.route('/')
@@ -44,15 +44,23 @@ def create_post():
 
 @api.route('api/create_user', method=['POST'])
 def create_user():
-    email = form.email.data
-    username = form.username.data
-    password = form.password.data
+    if not request.is_json:
+        return jsonify({'error': 'Your request user-type must be application/json'}), 400
+    data = request.json
+    print(data)
+    for field in ['email', 'username', 'password']:
+        if field not in data:
+            return jsonify({'error': f"'{field}' must be in request body"}), 400
+
+    email = data.get('email')
+    username = data.get('username')
+    password = data.get('password')
     new_user = User(email=email, username=username, password=password)
     return jsonify(new_user.to_dict()), 201
 
 
 @api.route('api/create_user/<id>', method=['GET'])
 def get_user():
-    user = User.query.get_or_404(user_id)
-    return jsonify(user.to_dict())
+    users = User.query_all()
+    return jsonify([u.to_dict() for u in users])
     
